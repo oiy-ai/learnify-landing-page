@@ -1,0 +1,199 @@
+name: Deploy to Server with BT Panel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: PROD
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
+        
+    - name: Install dependencies
+      run: pnpm install
+      
+    - name: Deploy Convex to Production
+      env:
+        CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+      run: npx convex deploy
+      
+    - name: Build application
+      env:
+        VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+        VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
+        CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
+        FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+      run: npm run build
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-files
+        path: build/
+        
+    - name: Upload build to server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        port: ${{ secrets.SERVER_PORT || 22 }}
+        source: "build/*"
+        target: "/tmp/ringbot-build/"
+        strip_components: 1
+        
+    - name: Deploy to Server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        port: ${{ secrets.SERVER_PORT || 22 }}
+        script: |
+          set -e
+          echo "🚀 开始部署到宝塔面板服务器..."
+          
+          # 设置环境变量
+          export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
+          export NODE_PATH="/usr/local/lib/node_modules:$NODE_PATH"
+          
+          # 1. 创建应用目录结构
+          echo "📁 创建目录结构..."
+          mkdir -p /www/wwwroot/ringbot
+          mkdir -p /www/wwwroot/ringbot/logs
+          mkdir -p /www/backup/ringbot
+          
+          # 2. 设置权限
+          chown -R www:www /www/wwwroot/ringbot
+          chmod -R 755 /www/wwwroot/ringbot
+          
+          # 3. 备份现有版本
+          if [ -d "/www/wwwroot/ringbot/build" ]; then
+            echo "📦 备份当前版本..."
+            cp -r /www/wwwroot/ringbot/build /www/backup/ringbot/build-$(date +%Y%m%d-%H%M%S)
+          fi
+          
+          # 4. 部署构建产物
+          echo "📦 部署构建产物..."
+          rm -rf /www/wwwroot/ringbot/build
+          mv /tmp/ringbot-build /www/wwwroot/ringbot/build
+          
+          # 5. 克隆配置文件（仅首次或需要时）
+          if [ ! -f "/www/wwwroot/ringbot/package.json" ]; then
+            echo "📥 下载配置文件..."
+            cd /tmp
+            git clone https://${{ secrets.DEPLOY_PAT }}@github.com/${{ github.repository }}.git ringbot-config
+            cp ringbot-config/package.json /www/wwwroot/ringbot/
+            cp ringbot-config/ecosystem.config.cjs /www/wwwroot/ringbot/ 2>/dev/null || true
+            rm -rf ringbot-config
+          fi
+          
+          # 6. 设置权限
+          chown -R www:www /www/wwwroot/ringbot
+          
+          # 7. 无需安装 Node.js - 直接使用 Nginx 托管静态文件
+          
+          # 8. 创建 Nginx 配置
+          echo "🌐 配置 Nginx..."
+          cat > /www/server/panel/vhost/nginx/ringbot.conf << 'EOF'
+          server {
+              listen 80 default_server;
+              server_name ${{ secrets.DOMAIN_NAME }};
+              
+              root /www/wwwroot/ringbot/build/client;
+              index index.html;
+              
+              access_log /www/wwwlogs/ringbot_access.log;
+              error_log /www/wwwlogs/ringbot_error.log;
+              
+              # 安全头
+              add_header X-Frame-Options "SAMEORIGIN" always;
+              add_header X-XSS-Protection "1; mode=block" always;
+              add_header X-Content-Type-Options "nosniff" always;
+              add_header Referrer-Policy "no-referrer-when-downgrade" always;
+              
+              # 静态文件缓存
+              location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|otf|eot)$ {
+                  expires 1y;
+                  add_header Cache-Control "public, immutable";
+                  try_files $uri =404;
+              }
+              
+              # SPA 路由处理 - 所有路由都返回 index.html
+              location / {
+                  try_files $uri $uri/ /index.html;
+              }
+              
+              # 健康检查端点
+              location /health {
+                  access_log off;
+                  return 200 "healthy\n";
+                  add_header Content-Type text/plain;
+              }
+              
+              # 防止访问隐藏文件
+              location ~ /\. {
+                  deny all;
+              }
+          }
+          EOF
+          
+          # 9. 创建环境变量文件
+          echo "⚙️ 配置环境变量..."
+          cat > /www/wwwroot/ringbot/.env << 'EOF'
+          PORT=3001
+          VITE_CONVEX_URL=${{ secrets.VITE_CONVEX_URL }}
+          CONVEX_DEPLOYMENT=${{ secrets.CONVEX_DEPLOYMENT }}
+          VITE_CLERK_PUBLISHABLE_KEY=${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+          EOF
+          
+          # 10. 设置文件权限
+          chown -R www:www /www/wwwroot/ringbot
+          
+          # 11. 停止并删除 PM2 应用（不再需要）
+          echo "🔄 清理 PM2 应用..."
+          PM2_CMD=""
+          for path in "/usr/local/bin/pm2" "/usr/bin/pm2" "/root/.npm-global/bin/pm2" "pm2"; do
+            if command -v $path &> /dev/null; then
+              PM2_CMD=$path
+              break
+            fi
+          done
+          
+          if [ -n "$PM2_CMD" ] && $PM2_CMD list | grep -q "ringbot"; then
+            echo "停止并删除 PM2 应用..."
+            $PM2_CMD stop ringbot
+            $PM2_CMD delete ringbot
+            $PM2_CMD save
+          else
+            echo "未找到 PM2 应用，跳过清理"
+          fi
+          
+          # 12. 测试并重载 Nginx
+          echo "🌐 重载 Nginx..."
+          nginx -t && nginx -s reload
+          
+          echo "✅ 部署完成！"
+          echo "📊 应用状态："
+          pm2 status
+    
+    - name: Health Check
+      run: |
+        sleep 30
+        curl -f http://${{ secrets.SERVER_HOST }}/health || exit 1

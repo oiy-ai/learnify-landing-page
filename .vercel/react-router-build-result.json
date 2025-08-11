@@ -1,0 +1,277 @@
+{
+  "buildManifest": {
+    "routes": {
+      "root": {
+        "path": "",
+        "id": "root",
+        "file": "root.tsx"
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "root",
+        "file": "routes/home.tsx",
+        "index": true
+      },
+      "routes/sign-in": {
+        "id": "routes/sign-in",
+        "parentId": "root",
+        "file": "routes/sign-in.tsx",
+        "path": "sign-in/*"
+      },
+      "routes/sign-up": {
+        "id": "routes/sign-up",
+        "parentId": "root",
+        "file": "routes/sign-up.tsx",
+        "path": "sign-up/*"
+      },
+      "routes/pricing": {
+        "id": "routes/pricing",
+        "parentId": "root",
+        "file": "routes/pricing.tsx",
+        "path": "pricing"
+      },
+      "routes/success": {
+        "id": "routes/success",
+        "parentId": "root",
+        "file": "routes/success.tsx",
+        "path": "success"
+      },
+      "routes/subscription-required": {
+        "id": "routes/subscription-required",
+        "parentId": "root",
+        "file": "routes/subscription-required.tsx",
+        "path": "subscription-required"
+      },
+      "routes/admin-setup": {
+        "id": "routes/admin-setup",
+        "parentId": "root",
+        "file": "routes/admin-setup.tsx",
+        "path": "admin-setup"
+      },
+      "routes/debug-env": {
+        "id": "routes/debug-env",
+        "parentId": "root",
+        "file": "routes/debug-env.tsx",
+        "path": "debug-env"
+      },
+      "routes/dashboard/layout": {
+        "id": "routes/dashboard/layout",
+        "parentId": "root",
+        "file": "routes/dashboard/layout.tsx"
+      },
+      "routes/dashboard/index": {
+        "id": "routes/dashboard/index",
+        "parentId": "routes/dashboard/layout",
+        "file": "routes/dashboard/index.tsx",
+        "path": "dashboard"
+      },
+      "routes/dashboard/chat": {
+        "id": "routes/dashboard/chat",
+        "parentId": "routes/dashboard/layout",
+        "file": "routes/dashboard/chat.tsx",
+        "path": "dashboard/chat"
+      },
+      "routes/dashboard/settings": {
+        "id": "routes/dashboard/settings",
+        "parentId": "routes/dashboard/layout",
+        "file": "routes/dashboard/settings.tsx",
+        "path": "dashboard/settings"
+      },
+      "routes/admin/layout": {
+        "id": "routes/admin/layout",
+        "parentId": "root",
+        "file": "routes/admin/layout.tsx"
+      },
+      "routes/admin/index": {
+        "id": "routes/admin/index",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/index.tsx",
+        "path": "admin"
+      },
+      "routes/admin/users": {
+        "id": "routes/admin/users",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/users.tsx",
+        "path": "admin/users"
+      },
+      "routes/admin/subscriptions": {
+        "id": "routes/admin/subscriptions",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/subscriptions.tsx",
+        "path": "admin/subscriptions"
+      },
+      "routes/admin/products": {
+        "id": "routes/admin/products",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/products.tsx",
+        "path": "admin/products"
+      },
+      "routes/admin/analytics": {
+        "id": "routes/admin/analytics",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/analytics.tsx",
+        "path": "admin/analytics"
+      },
+      "routes/admin/settings": {
+        "id": "routes/admin/settings",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/settings.tsx",
+        "path": "admin/settings"
+      },
+      "routes/admin/polar-setup": {
+        "id": "routes/admin/polar-setup",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/polar-setup.tsx",
+        "path": "admin/polar-setup"
+      }
+    }
+  },
+  "reactRouterConfig": {
+    "appDirectory": "C:/Users/67487/Documents/GitHub/ringbot/app",
+    "basename": "/",
+    "buildDirectory": "C:/Users/67487/Documents/GitHub/ringbot/build",
+    "future": {
+      "unstable_middleware": false,
+      "unstable_optimizeDeps": false,
+      "unstable_splitRouteModules": false,
+      "unstable_subResourceIntegrity": false,
+      "unstable_viteEnvironmentApi": false
+    },
+    "routes": {
+      "root": {
+        "path": "",
+        "id": "root",
+        "file": "root.tsx"
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "root",
+        "file": "routes/home.tsx",
+        "index": true
+      },
+      "routes/sign-in": {
+        "id": "routes/sign-in",
+        "parentId": "root",
+        "file": "routes/sign-in.tsx",
+        "path": "sign-in/*"
+      },
+      "routes/sign-up": {
+        "id": "routes/sign-up",
+        "parentId": "root",
+        "file": "routes/sign-up.tsx",
+        "path": "sign-up/*"
+      },
+      "routes/pricing": {
+        "id": "routes/pricing",
+        "parentId": "root",
+        "file": "routes/pricing.tsx",
+        "path": "pricing"
+      },
+      "routes/success": {
+        "id": "routes/success",
+        "parentId": "root",
+        "file": "routes/success.tsx",
+        "path": "success"
+      },
+      "routes/subscription-required": {
+        "id": "routes/subscription-required",
+        "parentId": "root",
+        "file": "routes/subscription-required.tsx",
+        "path": "subscription-required"
+      },
+      "routes/admin-setup": {
+        "id": "routes/admin-setup",
+        "parentId": "root",
+        "file": "routes/admin-setup.tsx",
+        "path": "admin-setup"
+      },
+      "routes/debug-env": {
+        "id": "routes/debug-env",
+        "parentId": "root",
+        "file": "routes/debug-env.tsx",
+        "path": "debug-env"
+      },
+      "routes/dashboard/layout": {
+        "id": "routes/dashboard/layout",
+        "parentId": "root",
+        "file": "routes/dashboard/layout.tsx"
+      },
+      "routes/dashboard/index": {
+        "id": "routes/dashboard/index",
+        "parentId": "routes/dashboard/layout",
+        "file": "routes/dashboard/index.tsx",
+        "path": "dashboard"
+      },
+      "routes/dashboard/chat": {
+        "id": "routes/dashboard/chat",
+        "parentId": "routes/dashboard/layout",
+        "file": "routes/dashboard/chat.tsx",
+        "path": "dashboard/chat"
+      },
+      "routes/dashboard/settings": {
+        "id": "routes/dashboard/settings",
+        "parentId": "routes/dashboard/layout",
+        "file": "routes/dashboard/settings.tsx",
+        "path": "dashboard/settings"
+      },
+      "routes/admin/layout": {
+        "id": "routes/admin/layout",
+        "parentId": "root",
+        "file": "routes/admin/layout.tsx"
+      },
+      "routes/admin/index": {
+        "id": "routes/admin/index",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/index.tsx",
+        "path": "admin"
+      },
+      "routes/admin/users": {
+        "id": "routes/admin/users",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/users.tsx",
+        "path": "admin/users"
+      },
+      "routes/admin/subscriptions": {
+        "id": "routes/admin/subscriptions",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/subscriptions.tsx",
+        "path": "admin/subscriptions"
+      },
+      "routes/admin/products": {
+        "id": "routes/admin/products",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/products.tsx",
+        "path": "admin/products"
+      },
+      "routes/admin/analytics": {
+        "id": "routes/admin/analytics",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/analytics.tsx",
+        "path": "admin/analytics"
+      },
+      "routes/admin/settings": {
+        "id": "routes/admin/settings",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/settings.tsx",
+        "path": "admin/settings"
+      },
+      "routes/admin/polar-setup": {
+        "id": "routes/admin/polar-setup",
+        "parentId": "routes/admin/layout",
+        "file": "routes/admin/polar-setup.tsx",
+        "path": "admin/polar-setup"
+      }
+    },
+    "routeDiscovery": {
+      "mode": "initial"
+    },
+    "serverBuildFile": "index.js",
+    "serverModuleFormat": "esm",
+    "ssr": false
+  },
+  "viteConfig": {
+    "build": {
+      "assetsDir": "assets"
+    }
+  }
+}

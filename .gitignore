@@ -1,0 +1,17 @@
+.DS_Store
+/node_modules/
+
+# React Router
+/.react-router/
+/build/
+
+.env.local
+
+.idea/
+.vscode/
+.claude/
+
+packages/
+packages/ai-chat-demo/
+packages/landing-page/
+
